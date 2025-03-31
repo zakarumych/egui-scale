@@ -1,6 +1,6 @@
 //! This crate provides a trait for scaling various types in the `egui` library.
 //! It includes implementations for primitive types, vectors, and various `egui` types.
-//! The `Scale` trait allows for scaling values by a given factor, which can be useful for
+//! The `EguiScale` trait allows for scaling values by a given factor, which can be useful for
 //! creating responsive UIs that adapt to different screen sizes or user preferences.
 
 #![forbid(unsafe_code)]
@@ -15,10 +15,10 @@ use egui::{
 
 /// A trait for scaling various types in the `egui` library.
 pub trait EguiScale {
-    /// Zooms the value by the given factor.
+    /// Scales the value by the given factor.
     fn scale(&mut self, scale: f32);
 
-    /// Scale the value by the given factor and return the modified value.
+    /// Scales the value by the given factor and return the modified value.
     #[inline]
     #[must_use]
     fn scaled(mut self, scale: f32) -> Self

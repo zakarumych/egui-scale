@@ -1,6 +1,6 @@
 //! This crate provides a trait for scaling various types in the `egui` library.
 //! It includes implementations for primitive types, vectors, and various `egui` types.
-//! The `Scale` trait allows for scaling values by a given factor, which can be useful for
+//! The `EguiScale` trait allows for scaling values by a given factor, which can be useful for
 //! creating responsive UIs that adapt to different screen sizes or user preferences.
 
 #![forbid(unsafe_code)]

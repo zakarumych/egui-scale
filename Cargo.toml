@@ -7,8 +7,8 @@ license = "MIT OR Apache-2.0"
 documentation = "https://docs.rs/egui-scale"
 homepage = "https://github.com/zakarumych/egui-scale"
 repository = "https://github.com/zakarumych/egui-scale"
-keywords = ["egui", "scale", "scaling"]
-categories = ["gui", "egui", "imgui", "portable"]
+keywords = ["egui", "gui", "imgui", "scale"]
+categories = ["gui"]
 
 [dependencies]
 egui = "0.31"

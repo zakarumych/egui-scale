@@ -4,20 +4,20 @@
 
 ## Features
 
-- **Generic Scale Trait**: The `Scale` trait can be implemented for any type, allowing flexible scaling.
-- **Built-in Implementations**: Predefined `Scale` implementations for common `egui` types, such as:
+- **Generic Scale Trait**: The `EguiScale` trait can be implemented for any type, allowing flexible scaling.
+- **Built-in Implementations**: Predefined `EguiScale` implementations for common `egui` types, such as:
     - `Vec2`
     - `Margin`
     - `Stroke`
     - `Visuals`
     - `Style`
     - And many more!
-- **Customizable**: Extend the functionality by implementing the `Scale` trait for your own types.
+- **Customizable**: Extend the functionality by implementing the `EguiScale` trait for your own types.
 
 ## Example Usage
 
 ```rust
-use egui_zoom::Scale;
+use egui_scale::EguiScale;
 
 fn show_large_labels(ui: &mut egui::Ui) {
     ui.vertical(|ui| {

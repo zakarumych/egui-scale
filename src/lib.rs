@@ -1,6 +1,6 @@
-//! This crate provides a trait for zooming various types in the `egui` library.
+//! This crate provides a trait for scaling various types in the `egui` library.
 //! It includes implementations for primitive types, vectors, and various `egui` types.
-//! The `Zoom` trait allows for scaling values by a given factor, which can be useful for
+//! The `Scale` trait allows for scaling values by a given factor, which can be useful for
 //! creating responsive UIs that adapt to different screen sizes or user preferences.
 
 #![forbid(unsafe_code)]
@@ -13,98 +13,98 @@ use egui::{
     CornerRadius, FontId, Frame, Margin, Stroke, Style, Vec2, Visuals,
 };
 
-/// A trait for zooming various types in the `egui` library.
-pub trait Zoom {
+/// A trait for scaling various types in the `egui` library.
+pub trait EguiScale {
     /// Zooms the value by the given factor.
-    fn zoom(&mut self, zoom: f32);
+    fn scale(&mut self, scale: f32);
 
-    /// Zoom the value by the given factor and return the modified value.
+    /// Scale the value by the given factor and return the modified value.
     #[inline]
     #[must_use]
-    fn zoomed(mut self, zoom: f32) -> Self
+    fn scaled(mut self, scale: f32) -> Self
     where
         Self: Sized,
     {
-        self.zoom(zoom);
+        self.scale(scale);
         self
     }
 }
 
-impl Zoom for f32 {
+impl EguiScale for f32 {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        *self *= zoom;
+    fn scale(&mut self, scale: f32) {
+        *self *= scale;
     }
 }
 
-impl Zoom for u8 {
+impl EguiScale for u8 {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
+    fn scale(&mut self, scale: f32) {
         #![allow(clippy::cast_possible_truncation)]
         #![allow(clippy::cast_sign_loss)]
 
-        *self = (f32::from(*self) * zoom) as u8;
+        *self = (f32::from(*self) * scale) as u8;
     }
 }
 
-impl Zoom for i8 {
+impl EguiScale for i8 {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
+    fn scale(&mut self, scale: f32) {
         #![allow(clippy::cast_possible_truncation)]
 
-        *self = (f32::from(*self) * zoom) as i8;
+        *self = (f32::from(*self) * scale) as i8;
     }
 }
 
-impl Zoom for Vec2 {
+impl EguiScale for Vec2 {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        *self *= zoom;
+    fn scale(&mut self, scale: f32) {
+        *self *= scale;
     }
 }
 
-impl Zoom for CornerRadius {
+impl EguiScale for CornerRadius {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.nw.zoom(zoom);
-        self.ne.zoom(zoom);
-        self.se.zoom(zoom);
-        self.sw.zoom(zoom);
+    fn scale(&mut self, scale: f32) {
+        self.nw.scale(scale);
+        self.ne.scale(scale);
+        self.se.scale(scale);
+        self.sw.scale(scale);
     }
 }
 
-impl Zoom for Margin {
+impl EguiScale for Margin {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.left.zoom(zoom);
-        self.right.zoom(zoom);
-        self.top.zoom(zoom);
-        self.bottom.zoom(zoom);
+    fn scale(&mut self, scale: f32) {
+        self.left.scale(scale);
+        self.right.scale(scale);
+        self.top.scale(scale);
+        self.bottom.scale(scale);
     }
 }
 
-impl<T: Zoom> Zoom for [T] {
+impl<T: EguiScale> EguiScale for [T] {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
+    fn scale(&mut self, scale: f32) {
         for value in self.iter_mut() {
-            value.zoom(zoom);
+            value.scale(scale);
         }
     }
 }
 
-impl Zoom for Shadow {
+impl EguiScale for Shadow {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.offset.zoom(zoom);
-        self.blur.zoom(zoom);
-        self.spread.zoom(zoom);
+    fn scale(&mut self, scale: f32) {
+        self.offset.scale(scale);
+        self.blur.scale(scale);
+        self.spread.scale(scale);
     }
 }
 
-impl Zoom for Stroke {
+impl EguiScale for Stroke {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.width *= zoom;
+    fn scale(&mut self, scale: f32) {
+        self.width *= scale;
         if self.width < 1.0 {
             self.color.gamma_multiply(self.width);
             self.width = 1.0;
@@ -112,131 +112,131 @@ impl Zoom for Stroke {
     }
 }
 
-impl Zoom for WidgetVisuals {
+impl EguiScale for WidgetVisuals {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.bg_stroke.zoom(zoom);
-        self.corner_radius.zoom(zoom);
-        self.fg_stroke.zoom(zoom);
-        self.expansion.zoom(zoom);
+    fn scale(&mut self, scale: f32) {
+        self.bg_stroke.scale(scale);
+        self.corner_radius.scale(scale);
+        self.fg_stroke.scale(scale);
+        self.expansion.scale(scale);
     }
 }
 
-impl Zoom for Interaction {
+impl EguiScale for Interaction {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.resize_grab_radius_corner.zoom(zoom);
-        self.resize_grab_radius_side.zoom(zoom);
+    fn scale(&mut self, scale: f32) {
+        self.resize_grab_radius_corner.scale(scale);
+        self.resize_grab_radius_side.scale(scale);
     }
 }
 
-impl Zoom for Widgets {
+impl EguiScale for Widgets {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.noninteractive.zoom(zoom);
-        self.inactive.zoom(zoom);
-        self.hovered.zoom(zoom);
-        self.active.zoom(zoom);
-        self.open.zoom(zoom);
+    fn scale(&mut self, scale: f32) {
+        self.noninteractive.scale(scale);
+        self.inactive.scale(scale);
+        self.hovered.scale(scale);
+        self.active.scale(scale);
+        self.open.scale(scale);
     }
 }
 
-impl Zoom for TextCursorStyle {
+impl EguiScale for TextCursorStyle {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.stroke.zoom(zoom);
+    fn scale(&mut self, scale: f32) {
+        self.stroke.scale(scale);
     }
 }
 
-impl Zoom for Visuals {
+impl EguiScale for Visuals {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.clip_rect_margin.zoom(zoom);
-        self.menu_corner_radius.zoom(zoom);
-        self.popup_shadow.zoom(zoom);
-        self.resize_corner_size.zoom(zoom);
-        self.selection.stroke.zoom(zoom);
-        self.text_cursor.zoom(zoom);
-        self.widgets.zoom(zoom);
-        self.window_corner_radius.zoom(zoom);
-        self.window_shadow.zoom(zoom);
-        self.window_stroke.zoom(zoom);
+    fn scale(&mut self, scale: f32) {
+        self.clip_rect_margin.scale(scale);
+        self.menu_corner_radius.scale(scale);
+        self.popup_shadow.scale(scale);
+        self.resize_corner_size.scale(scale);
+        self.selection.stroke.scale(scale);
+        self.text_cursor.scale(scale);
+        self.widgets.scale(scale);
+        self.window_corner_radius.scale(scale);
+        self.window_shadow.scale(scale);
+        self.window_stroke.scale(scale);
     }
 }
 
-impl Zoom for ScrollStyle {
+impl EguiScale for ScrollStyle {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.bar_inner_margin.zoom(zoom);
-        self.bar_outer_margin.zoom(zoom);
-        self.bar_width.zoom(zoom);
-        self.floating_allocated_width.zoom(zoom);
-        self.floating_width.zoom(zoom);
-        self.handle_min_length.zoom(zoom);
+    fn scale(&mut self, scale: f32) {
+        self.bar_inner_margin.scale(scale);
+        self.bar_outer_margin.scale(scale);
+        self.bar_width.scale(scale);
+        self.floating_allocated_width.scale(scale);
+        self.floating_width.scale(scale);
+        self.handle_min_length.scale(scale);
     }
 }
 
-impl Zoom for Spacing {
+impl EguiScale for Spacing {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.button_padding.zoom(zoom);
-        self.combo_height.zoom(zoom);
-        self.combo_width.zoom(zoom);
-        self.icon_spacing.zoom(zoom);
-        self.icon_width.zoom(zoom);
-        self.icon_width_inner.zoom(zoom);
-        self.indent.zoom(zoom);
-        self.interact_size.zoom(zoom);
-        self.item_spacing.zoom(zoom);
-        self.menu_margin.zoom(zoom);
-        self.scroll.zoom(zoom);
-        self.slider_width.zoom(zoom);
-        self.text_edit_width.zoom(zoom);
-        self.tooltip_width.zoom(zoom);
-        self.window_margin.zoom(zoom);
+    fn scale(&mut self, scale: f32) {
+        self.button_padding.scale(scale);
+        self.combo_height.scale(scale);
+        self.combo_width.scale(scale);
+        self.icon_spacing.scale(scale);
+        self.icon_width.scale(scale);
+        self.icon_width_inner.scale(scale);
+        self.indent.scale(scale);
+        self.interact_size.scale(scale);
+        self.item_spacing.scale(scale);
+        self.menu_margin.scale(scale);
+        self.scroll.scale(scale);
+        self.slider_width.scale(scale);
+        self.text_edit_width.scale(scale);
+        self.tooltip_width.scale(scale);
+        self.window_margin.scale(scale);
     }
 }
 
-impl Zoom for FontId {
-    fn zoom(&mut self, zoom: f32) {
-        self.size.zoom(zoom);
+impl EguiScale for FontId {
+    fn scale(&mut self, scale: f32) {
+        self.size.scale(scale);
     }
 }
 
-impl Zoom for Style {
+impl EguiScale for Style {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
+    fn scale(&mut self, scale: f32) {
         if let Some(font_id) = &mut self.override_font_id {
-            font_id.zoom(zoom);
+            font_id.scale(scale);
         }
         for font_id in self.text_styles.values_mut() {
-            font_id.zoom(zoom);
+            font_id.scale(scale);
         }
-        self.interaction.zoom(zoom);
-        self.spacing.zoom(zoom);
-        self.visuals.zoom(zoom);
+        self.interaction.scale(scale);
+        self.spacing.scale(scale);
+        self.visuals.scale(scale);
     }
 }
 
-impl<T> Zoom for Option<T>
+impl<T> EguiScale for Option<T>
 where
-    T: Zoom,
+    T: EguiScale,
 {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
+    fn scale(&mut self, scale: f32) {
         if let Some(value) = self {
-            value.zoom(zoom);
+            value.scale(scale);
         }
     }
 }
 
-impl Zoom for Frame {
+impl EguiScale for Frame {
     #[inline]
-    fn zoom(&mut self, zoom: f32) {
-        self.inner_margin.zoom(zoom);
-        self.outer_margin.zoom(zoom);
-        self.corner_radius.zoom(zoom);
-        self.shadow.zoom(zoom);
-        self.stroke.zoom(zoom);
+    fn scale(&mut self, scale: f32) {
+        self.inner_margin.scale(scale);
+        self.outer_margin.scale(scale);
+        self.corner_radius.scale(scale);
+        self.shadow.scale(scale);
+        self.stroke.scale(scale);
     }
 }

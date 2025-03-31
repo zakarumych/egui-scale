@@ -72,7 +72,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "egui-zoom"
+name = "egui-scale"
 version = "0.1.0"
 dependencies = [
  "egui",

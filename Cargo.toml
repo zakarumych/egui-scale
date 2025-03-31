@@ -1,7 +1,14 @@
 [package]
-name = "egui-zoom"
+name = "egui-scale"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+description = "Egui scaling library"
+license = "MIT or Apache-2.0"
+documentation = "https://docs.rs/egui-scale"
+homepage = "https://github.com/zakarumych/egui-scale"
+repository = "https://github.com/zakarumych/egui-scale"
+keywords = ["egui", "scale", "scaling"]
+categories = ["gui", "egui", "imgui", "portable"]
 
 [dependencies]
 egui = "0.31"

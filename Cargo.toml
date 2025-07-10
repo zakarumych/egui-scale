@@ -11,4 +11,4 @@ keywords = ["egui", "gui", "imgui", "scale"]
 categories = ["gui"]
 
 [dependencies]
-egui = "0.31"
+egui = "0.32"

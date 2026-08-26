@@ -151,6 +151,7 @@ impl EguiScale for TextCursorStyle {
 impl EguiScale for Visuals {
     #[inline]
     fn scale(&mut self, scale: f32) {
+        #[allow(deprecated)]
         self.clip_rect_margin.scale(scale);
         self.menu_corner_radius.scale(scale);
         self.popup_shadow.scale(scale);

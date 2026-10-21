@@ -106,7 +106,7 @@ impl EguiScale for Stroke {
     fn scale(&mut self, scale: f32) {
         self.width *= scale;
         if self.width < 1.0 {
-            self.color.gamma_multiply(self.width);
+            self.color = self.color.gamma_multiply(self.width);
             self.width = 1.0;
         }
     }
@@ -127,6 +127,7 @@ impl EguiScale for Interaction {
     fn scale(&mut self, scale: f32) {
         self.resize_grab_radius_corner.scale(scale);
         self.resize_grab_radius_side.scale(scale);
+        self.interact_radius.scale(scale);
     }
 }
 
@@ -156,6 +157,8 @@ impl EguiScale for Visuals {
         self.menu_corner_radius.scale(scale);
         self.popup_shadow.scale(scale);
         self.resize_corner_size.scale(scale);
+        self.ime_composition.active_underline_stroke.scale(scale);
+        self.ime_composition.inactive_underline_stroke.scale(scale);
         self.selection.stroke.scale(scale);
         self.text_cursor.scale(scale);
         self.widgets.scale(scale);
@@ -171,9 +174,13 @@ impl EguiScale for ScrollStyle {
         self.bar_inner_margin.scale(scale);
         self.bar_outer_margin.scale(scale);
         self.bar_width.scale(scale);
+        self.content_margin.scale(scale);
         self.floating_allocated_width.scale(scale);
         self.floating_width.scale(scale);
         self.handle_min_length.scale(scale);
+        self.fade.size.scale(scale);
+        // `kinetic.decay_time` is a time constant and is deliberately left unscaled.
+        self.kinetic.stop_distance.scale(scale);
     }
 }
 
@@ -189,6 +196,11 @@ impl EguiScale for Spacing {
         self.indent.scale(scale);
         self.interact_size.scale(scale);
         self.item_spacing.scale(scale);
+        self.default_area_size.scale(scale);
+        self.extra_text_line_spacing.scale(scale);
+        self.menu_spacing.scale(scale);
+        self.menu_width.scale(scale);
+        self.slider_rail_height.scale(scale);
         self.menu_margin.scale(scale);
         self.scroll.scale(scale);
         self.slider_width.scale(scale);
@@ -239,5 +251,122 @@ impl EguiScale for Frame {
         self.corner_radius.scale(scale);
         self.shadow.scale(scale);
         self.stroke.scale(scale);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use egui::{Color32, Stroke, Style};
+
+    #[test]
+    fn sub_pixel_stroke_fades_colour_and_clamps_width() {
+        let mut stroke = Stroke::new(0.5, Color32::from_rgba_unmultiplied(200, 100, 50, 255));
+        stroke.scale(1.0);
+        assert!(
+            (stroke.width - 1.0).abs() < f32::EPSILON,
+            "width is clamped to one pixel, got {}",
+            stroke.width
+        );
+        assert!(
+            stroke.color.a() < 255,
+            "colour must fade with the sub-pixel width, got alpha {}",
+            stroke.color.a()
+        );
+    }
+
+    #[test]
+    fn sub_pixel_stroke_colour_matches_gamma_multiply() {
+        let colour = Color32::from_rgba_unmultiplied(200, 100, 50, 255);
+        let mut stroke = Stroke::new(2.0, colour);
+        stroke.scale(0.25);
+        assert!(
+            (stroke.width - 1.0).abs() < f32::EPSILON,
+            "width is clamped to one pixel, got {}",
+            stroke.width
+        );
+        assert_eq!(stroke.color, colour.gamma_multiply(0.5));
+    }
+
+    #[test]
+    fn stroke_at_or_above_one_pixel_keeps_colour() {
+        let colour = Color32::from_rgba_unmultiplied(200, 100, 50, 255);
+        let mut stroke = Stroke::new(2.0, colour);
+        stroke.scale(1.0);
+        assert!((stroke.width - 2.0).abs() < f32::EPSILON);
+        assert_eq!(stroke.color, colour);
+    }
+
+    #[test]
+    fn scroll_style_scales_content_margin_fade_and_stop_distance() {
+        let before = ScrollStyle::default();
+        let mut after = before;
+        after.scale(2.0);
+
+        assert_eq!(after.content_margin.left, before.content_margin.left * 2);
+        assert_eq!(after.content_margin.top, before.content_margin.top * 2);
+        assert!((after.fade.size - before.fade.size * 2.0).abs() < 1e-4);
+        assert!((after.kinetic.stop_distance - before.kinetic.stop_distance * 2.0).abs() < 1e-4);
+    }
+
+    #[test]
+    fn scroll_style_keeps_kinetic_decay_time() {
+        let before = ScrollStyle::default();
+        let mut after = before;
+        after.scale(2.0);
+        assert!((after.kinetic.decay_time - before.kinetic.decay_time).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn style_scales_spacing_lengths() {
+        let mut base = Style::default();
+        base.spacing.extra_text_line_spacing = 3.0;
+        let mut after = base.clone();
+        after.scale(2.0);
+
+        assert!(
+            (after.spacing.slider_rail_height - base.spacing.slider_rail_height * 2.0).abs() < 1e-4
+        );
+        assert!((after.spacing.extra_text_line_spacing - 6.0).abs() < 1e-4);
+        assert!(
+            (after.spacing.default_area_size.x - base.spacing.default_area_size.x * 2.0).abs()
+                < 1e-4
+        );
+        assert!(
+            (after.spacing.default_area_size.y - base.spacing.default_area_size.y * 2.0).abs()
+                < 1e-4
+        );
+        assert!((after.spacing.menu_width - base.spacing.menu_width * 2.0).abs() < 1e-4);
+        assert!((after.spacing.menu_spacing - base.spacing.menu_spacing * 2.0).abs() < 1e-4);
+    }
+
+    #[test]
+    fn style_scales_interact_radius() {
+        let base = Style::default();
+        let mut after = base.clone();
+        after.scale(2.0);
+        assert!(
+            (after.interaction.interact_radius - base.interaction.interact_radius * 2.0).abs()
+                < 1e-4
+        );
+    }
+
+    #[test]
+    fn style_scales_ime_underline_widths() {
+        let base = Style::default();
+        let mut after = base.clone();
+        after.scale(2.0);
+        let (ab, aa) = (
+            &base.visuals.ime_composition,
+            &after.visuals.ime_composition,
+        );
+        assert!(
+            (aa.active_underline_stroke.width - ab.active_underline_stroke.width * 2.0).abs()
+                < 1e-4
+        );
+        assert!(
+            (aa.inactive_underline_stroke.width - ab.inactive_underline_stroke.width * 2.0).abs()
+                < 1e-4
+        );
     }
 }

@@ -34,8 +34,10 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-egui-scale = "0.1.0"
+egui-scale = "0.7.0"
 ```
+
+`egui-scale` 0.7.x targets `egui` 0.37. The 0.6.x series targets `egui` 0.36.
 
 ## Why Use `egui-scale`?
 

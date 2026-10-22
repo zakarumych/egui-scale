@@ -1,6 +1,6 @@
 [package]
 name = "egui-scale"
-version = "0.6.1"
+version = "0.7.0"
 edition = "2024"
 description = "Egui scaling library"
 license = "MIT OR Apache-2.0"
@@ -11,4 +11,4 @@ keywords = ["egui", "gui", "imgui", "scale"]
 categories = ["gui"]
 
 [dependencies]
-egui = "0.36"
+egui = "0.37"
